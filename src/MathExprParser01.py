@@ -1,4 +1,4 @@
-# created: 9:24 2024/8/16
+# created: 09:24 2024/8/16 by ZXPrism
 # version 01
 # only support numbers containing ONE digit
 # does not support ^ (power operator)
