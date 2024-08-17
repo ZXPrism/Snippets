@@ -11,8 +11,8 @@ P = "ababcab"
 # expected next = [-1, 0, 0, 1, 2, 0, 1], if P = "ababcab"
 next = [0] * len(P)
 next[0] = -1
-i = 2
-k = 0
+i = 1
+k = -1
 while i < len(P):
     if k == -1 or P[i - 1] == P[k]:
         next[i] = k + 1
