@@ -16,7 +16,7 @@ prev = -1
 while i < len(P):
     if prev == -1 or P[i - 1] == P[prev]:
         next[i] = next[prev + 1] if P[i] == P[prev + 1] else prev + 1
-        prev = next[i]
+        prev += 1
         i += 1
     else:
         prev = next[prev]
