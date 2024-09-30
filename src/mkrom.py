@@ -31,8 +31,14 @@ def mkrom():
     rule = rule_fd.readlines()
     rule_fd.close()
 
+    cnt = 0
+
     for line in rule:
-        line.strip()
+        line = line.strip()
+
+        # 0. ignore blank lines
+        if len(line) == 0:
+            continue
 
         # 1. ignore annotations
         anno_idx = line.find("#")
