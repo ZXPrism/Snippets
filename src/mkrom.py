@@ -1,6 +1,3 @@
-# created: 11:01 2024/9/30 by ZXPrism
-# mkrom.py - used for logisim ROM data generation
-
 import sys
 
 
@@ -53,6 +50,10 @@ def mkrom():
             return
 
         data = hex(int(data, 2))[2:]
+
+        # padding
+        padding_num = (data_width + 3) // 4 - len(data)
+        data = "".join(["0"] * padding_num) + data
 
         # 3. enumerate every possible address and set data
         x_idx = []
