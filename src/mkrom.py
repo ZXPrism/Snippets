@@ -32,9 +32,13 @@ def mkrom():
     rule_fd.close()
 
     for line in rule:
+        line.strip()
+
         # 1. ignore annotations
         anno_idx = line.find("#")
-        if anno_idx != -1:
+        if anno_idx == 0:
+            continue
+        elif anno_idx != -1:
             line = line[:anno_idx]
 
         # 2. extract address and data -> entry[0], entry[1]
