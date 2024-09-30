@@ -31,8 +31,6 @@ def mkrom():
     rule = rule_fd.readlines()
     rule_fd.close()
 
-    cnt = 0
-
     for line in rule:
         line = line.strip()
 
