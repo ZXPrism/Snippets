@@ -6,15 +6,6 @@
 #include <string>
 #include <vector>
 
-struct RunLength {
-	RunLength() = default;
-	RunLength(char ch_, int cnt_)
-	    : ch(ch_)
-	    , cnt(cnt_) {}
-	char ch;
-	int cnt;
-};
-
 int main() {
 	std::cout << "input: ";
 
@@ -29,31 +20,30 @@ int main() {
 	const int n = s.size();
 
 	int num_ch_available = n;
-	std::vector<std::vector<RunLength>> plan(n);
+	std::vector<std::vector<int>> plan(n, std::vector<int>(1));
 
 	for (int subset_cnt = 1; subset_cnt <= n; subset_cnt++) {  // 尝试划分成 subset_cnt 个子集
 		auto dfs = [&](auto &&self, int subset_id) -> bool {
-			if ((subset_cnt - subset_id) > num_ch_available) {
-				return false;
-			}
-
 			if (subset_id == subset_cnt) {
-				for (int i = 0; i < 26; i++) {
-					if (hist[i] != 0) {
-						return false;
-					}
-				}
-				return true;
+				return num_ch_available == 0;
 			}
 
 			// 枚举当前子集的其中一种选法，别忘了做到不重不漏
 			for (int start_ch = 0; start_ch < 26; start_ch++) {
+				bool first_iter = true;
+
 				for (int cnt = 1; cnt <= hist[start_ch]; cnt++) {
 					// 确定了第一个字母以及出现次数
 					// 先把第一个字母用掉
 					hist[start_ch] -= cnt;
 					num_ch_available -= cnt;
-					plan[subset_id] = std::vector<RunLength>{ RunLength{ static_cast<char>('a' + start_ch), cnt } };
+
+					if (first_iter) {
+						plan[subset_id][0] = cnt + (start_ch << 20);
+						first_iter = false;
+					} else {
+						++plan[subset_id][0];
+					}
 
 					// 从这里开始才是构造当前子集！
 					int ok_ch_mask = 0;
@@ -76,10 +66,11 @@ int main() {
 						for (int j = start_ch + 1; j < 26; j++) {
 							if ((ok_ch_mask_subset >> j & 1) == 1) {
 								hist[j] -= cnt;
-								num_ch_available -= cnt;
-								plan[subset_id].emplace_back(static_cast<char>('a' + j), cnt);
+								plan[subset_id].emplace_back(cnt + (j << 20));
 							}
 						}
+
+						num_ch_available -= cnt * num_ok_ch;
 
 						// 递归构造下一个子集
 						if (self(self, subset_id + 1)) {
@@ -90,9 +81,9 @@ int main() {
 						for (int j = start_ch + 1; j < 26; j++) {
 							if ((ok_ch_mask_subset >> j & 1) == 1) {
 								hist[j] += cnt;
-								num_ch_available += cnt;
 							}
 						}
+						num_ch_available += cnt * num_ok_ch;
 
 						ok_ch_mask_subset = (ok_ch_mask_subset - 1) & ok_ch_mask;
 					}
@@ -113,7 +104,7 @@ int main() {
 			for (int i = 0; i < subset_cnt; i++) {
 				std::cout << '[' << i << "] ";
 				for (auto rl : plan[i]) {
-					std::cout << std::string(rl.cnt, rl.ch);
+					std::cout << std::string(rl & ((1 << 20) - 1), (rl >> 20) + 'a');
 				}
 				std::cout << '\n';
 			}
